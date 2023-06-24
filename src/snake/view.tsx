@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Pos } from "./pos";
+import { Pos } from "../components/pos";
 import { GameBoard } from "./gameboard";
 import { Direction } from "./snake";
 

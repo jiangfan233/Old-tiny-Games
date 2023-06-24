@@ -2,6 +2,7 @@ export interface PosType {
   x: number;
   y: number;
   add(other: Pos):Pos;
+  eq(rhs: Pos) :boolean;
 }
 
 export class Pos implements PosType {
@@ -18,5 +19,9 @@ export class Pos implements PosType {
 
   add(other: Pos):Pos {
     return Pos.new(this.x + other.x, this.y + other.y);
+  }
+
+  eq(rhs: Pos) :boolean {
+    return this.x === rhs.x && this.y === rhs.y;
   }
 }

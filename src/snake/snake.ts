@@ -1,4 +1,4 @@
-import { Pos } from "./pos";
+import { Pos } from "../components/pos";
 
 export interface SnakeInf {
   positions: Set<Pos>;

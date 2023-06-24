@@ -1,5 +1,6 @@
-import { Food, Pos } from "./pos";
+import { Food } from "./food";
 import { AfterMove, Direction, Snake } from "./snake";
+import { Pos } from "../components/pos";
 
 export interface GameBoardInf {
   width: number;

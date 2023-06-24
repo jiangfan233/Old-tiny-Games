@@ -4,7 +4,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Pos } from "./pos";
+import { Pos } from "../components/pos";
 import Tetris from "./tetris";
 
 const MemoBlock = React.memo(

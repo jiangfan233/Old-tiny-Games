@@ -11,6 +11,7 @@ import { JSX } from "react/jsx-runtime";
 
 const SnakeView = React.lazy(() => import("./snake/view"));
 const TetrisView = React.lazy(() => import("./tetris/view"));
+const MineSweeperView = React.lazy(() => import("./minesweepers/view"));
 
 interface ViewObj {
   key: string;
@@ -20,13 +21,15 @@ interface ViewObj {
 export default function App() {
   const tetrisView = useMemo(() => <TetrisView />, []);
   const snakeView = useMemo(() => <SnakeView />, []);
+  const mineSweeperView = useMemo(() => <MineSweeperView/>, []);
 
   const ViewArr = useMemo(
     () => [
+      { key: "mineSweeper", comp: mineSweeperView },
       { key: "tetris", comp: tetrisView },
       { key: "snake", comp: snakeView },
     ],
-    [tetrisView, snakeView]
+    [tetrisView, snakeView, mineSweeperView]
   );
 
   const [view, setView] = useState<ViewObj>(ViewArr[0]);

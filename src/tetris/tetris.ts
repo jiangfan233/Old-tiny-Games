@@ -1,4 +1,4 @@
-import { Pos, PosType } from "./pos";
+import { Pos, PosType } from "../components/pos";
 import { Shape, ShapeType } from "./shape";
 
 export type Direction = "Left" | "Right";
