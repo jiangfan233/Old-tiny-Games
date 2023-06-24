@@ -3,6 +3,7 @@ export interface PosType {
   y: number;
   add(other: Pos):Pos;
   eq(rhs: Pos) :boolean;
+  asKey() :string;
 }
 
 export class Pos implements PosType {
@@ -23,5 +24,9 @@ export class Pos implements PosType {
 
   eq(rhs: Pos) :boolean {
     return this.x === rhs.x && this.y === rhs.y;
+  }
+
+  asKey() :string {
+    return `${this.x}-${this.y}`;
   }
 }

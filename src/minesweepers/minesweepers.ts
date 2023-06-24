@@ -1,5 +1,5 @@
-import { Pos, PosType } from "../components/pos";
-import { Mine, MineInf } from "./mine";
+import { Pos } from "../components/pos";
+import { MaybeMine } from "./mine";
 
 export enum Direction {
   Up = 0,
@@ -12,70 +12,60 @@ export enum Direction {
   LeftUp,
 }
 
-export interface PosWithValue {
-  pos: PosType;
-  value: number;
-}
-
 export interface MineSpeeperTYpe {
   width: number;
   height: number;
   isFailed: boolean;
-  mines: Mine[];
-  positions: PosWithValue[][];
+  positions: MaybeMine[][];
 }
 
 export class MineSweepers implements MineSpeeperTYpe {
   width: number;
   height: number;
   isFailed: boolean;
-  mines: Mine[];
-  bombCount: number;
-  positions: PosWithValue[][];
+  mineCount: number;
+  positions: MaybeMine[][];
 
   constructor(
     width: number,
     height: number,
     isFailed: boolean,
-    mines: Mine[],
-    bombCount: number,
-    positions: PosWithValue[][]
+    mineCount: number,
+    positions: MaybeMine[][]
   ) {
     this.width = width;
     this.height = height;
     this.isFailed = isFailed;
-    this.mines = mines;
-    this.bombCount = bombCount;
+    this.mineCount = mineCount;
     this.positions = positions;
   }
 
-  static default(width = 16, height = 30, bombCount = 20) {
-    let positions: Array<Array<PosWithValue>> = Array(height)
+  static default(width = 16, height = 30, mineCount = 20) {
+    let positions: Array<Array<MaybeMine>> = Array(height)
       .fill(0)
       .map((_, y) =>
         Array(width)
           .fill(0)
-          .map((_, x) => ({ pos: Pos.new(x, y), value: 0 }))
+          .map((_, x) => MaybeMine.grass(x, y))
       );
+    let count = 0;
+    while (count < mineCount) {
+      // anti-pattern
+      let maybeMine =
+        positions[~~(Math.random() * height)][~~(Math.random() * width)];
 
-    let mines: Mine[] = [];
-    while (mines.length < bombCount) {
-      let mine = Mine.default(
-        ~~(Math.random() * height),
-        ~~(Math.random() * width)
-      );
-      if (!mines.some((m) => m.eq(mine))) {
-        mines.push(mine);
-        positions[mine.x][mine.y] = { pos: mine, value: -1 };
+      if (!maybeMine.isMine()) {
+        maybeMine.toMine();
+        count += 1;
       }
     }
 
-    return new MineSweepers(width, height, false, mines, bombCount, positions);
+    return new MineSweepers(width, height, false, mineCount, positions);
   }
 
   isMine(pos: Pos): Boolean {
-    const { value } = this.getPosition(pos);
-    return value! < 0;
+    const maybeMine = this.getPosition(pos);
+    return maybeMine.isMine();
   }
 
   isInBounds(pos: Pos): boolean {
@@ -126,20 +116,17 @@ export class MineSweepers implements MineSpeeperTYpe {
     }
   }
 
-  scan(startPos: PosWithValue) {
-    if (this.isMine(startPos.pos)) {
+  scan(startPos: MaybeMine) {
+    if(startPos.isMarked) return;
+    if (this.isMine(startPos)) {
       this.isFailed = true;
-      this.positions.forEach((v, index, arr) => {
-        arr[index] = v.map((posWithValue) => {
-          if (posWithValue.value < 0) {
-            (posWithValue.pos as MineInf).isShow = true;
-          }
-          return posWithValue;
-        });
+      startPos.isClickError = true;
+      this.positions.forEach((row) => {
+        row.forEach((maybeMine) => (maybeMine.isShow = true));
       });
       return;
     }
-    this.search(startPos.pos, []);
+    this.search(startPos, []);
   }
 
   search(pos: Pos, scanned: Pos[] = []) {
@@ -154,14 +141,7 @@ export class MineSweepers implements MineSpeeperTYpe {
         let dir = dirs[i];
         let nextPos = this.next(current, dir);
         if (!this.isInBounds(nextPos)) continue;
-
-        // if (
-        //   this.getPosition(nextPos).value > 0 ||
-        //   scanned.some((p) => nextPos.eq(p))
-        // ) {
-        //   console.log("scanned");
-        //   continue;
-        // }
+        if (this.getPosition(nextPos).isMarked) continue;
 
         if (this.isMine(nextPos)) {
           count += 1;
@@ -169,36 +149,42 @@ export class MineSweepers implements MineSpeeperTYpe {
           tmp.push(nextPos);
         }
       }
-      if(count > 0) {
-        this.getPosition(current).value = count;
-      } else {
-        tmp.forEach(pos => {
-          if(
-            queue.every(posInQueue => !posInQueue.eq(pos)) &&
-            scanned.every(posScanned => !posScanned.eq(pos))
+
+      scanned.push(current);
+      // if there is a mine near current,
+      // just update the counts of mine, don't need to
+      // dig deeper.
+      this.getPosition(current).setValue(count);
+      if (count <= 0) {
+        tmp.forEach((pos) => {
+          if (
+            queue.every((posInQueue) => !posInQueue.eq(pos)) &&
+            scanned.every((posScanned) => !posScanned.eq(pos))
           ) {
             queue.push(pos);
           }
-        })
-      } 
-      scanned.push(current);
-      // debugger
+        });
+      }
     }
   }
 
   clone() {
-    const { width, height, isFailed, mines, bombCount, positions } = this;
-    return new MineSweepers(
-      width,
-      height,
-      isFailed,
-      mines,
-      bombCount,
-      positions
-    );
+    const { width, height, isFailed, mineCount, positions } = this;
+    return new MineSweepers(width, height, isFailed, mineCount, positions);
   }
 
   iterPosition() {
     return this.positions.flatMap((arr) => arr.map((p) => p));
   }
+
+  markedMineCount() {
+    return this.mineCount - this.iterPosition().filter(
+      (maybeMine) => maybeMine.isMarked
+    ).length;
+  }
+
+  markMine(maybeMine: MaybeMine) {
+    maybeMine.mark();
+  }
 }
+export { MaybeMine };
