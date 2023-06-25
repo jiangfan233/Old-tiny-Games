@@ -16,6 +16,9 @@
 
 * {
   user-select: none;
+  color: inherit;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -24,17 +27,34 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: antiquewhite;
 }
 
-.container {
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+.view {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  gap: 1rem;
+}
+
+.custom-scheme {
   background-color: #213547;
+  color: skyblue;
 }
 
 @media (prefers-color-scheme: light) {
-  /* :root {
-    color: #213547;
-  } */
-  .container {
-    background-color: rgb(237, 248, 252);
+  .custom-scheme {
+    background-color: rgb(218, 239, 247);
+    color: black;
   }
+}
+
+.radios {
+  padding-left: 1rem;
+  padding-right: .5rem;
 }

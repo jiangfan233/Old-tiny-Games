@@ -29,7 +29,7 @@ const MemoBlock = React.memo(
 );
 
 export default function SnakeView() {
-  const [gameboard, setGameBoard] = useState(GameBoard.default(30, 30));
+  const [gameboard, setGameBoard] = useState(GameBoard.default(20, 20));
   const [direction, setDirection] = useState(Direction.Left);
   const timerRef = useRef<null| number>(null);
 
@@ -78,7 +78,7 @@ export default function SnakeView() {
 
   return (
     <div
-      className="container"
+      className="container custom-scheme"
       style={{
         display: "grid",
         gridTemplateColumns: `repeat(${gameboard.width}, 1rem)`,

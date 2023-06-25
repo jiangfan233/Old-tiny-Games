@@ -168,11 +168,10 @@ export default function MineSweeperView() {
 
   return (
     <div
-      className="mineSwepper-view"
+      className="container custom-scheme"
       style={{
         display: "flex",
         flexDirection: "column",
-        color: "black",
       }}
     >
       <div
@@ -192,9 +191,7 @@ export default function MineSweeperView() {
           display: "grid",
           gridTemplateRows: `repeat(${mineSweeper.height}, 1rem)`,
           gridTemplateColumns: `repeat(${mineSweeper.width}, 1rem)`,
-          background: "#e8e7e7",
           cursor: "pointer",
-          color: "black",
         }}
       >
         {mineSweeper.iterPosition().map((maybeMine, index) => (

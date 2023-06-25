@@ -42,7 +42,7 @@ export class Shape implements ShapeType {
       case 2:
         // j
         return new Shape(
-          "⬛",
+          "🎃",
           new Set([pos(1, 0), pos(1, 1), pos(1, 2), pos(0, 2)]),
           pos(1, 1)
         );

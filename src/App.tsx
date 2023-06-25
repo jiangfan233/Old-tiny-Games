@@ -44,10 +44,10 @@ export default function App() {
   );
 
   const radios = (
-    <ul>
+    <ul className="radios custom-scheme">
       {ViewArr.map((viewObj) => (
         <li key={viewObj.key}>
-          <label style={{ color: "black", cursor: "pointer" }}>
+          <label style={{ cursor: "pointer" }}>
             <button
               name="selector"
               onClick={(e: any) =>
@@ -64,15 +64,11 @@ export default function App() {
 
   return (
     <div
-      style={{
-        display: "flex",
-        justifyContent: "space-around",
-        alignItems: "center",
-      }}
+      className="view"
     >
+      {radios}
       {/* should be a Loading component */}
       <Suspense fallback={null}>{view.comp as ReactNode}</Suspense>
-      {radios}
     </div>
   );
 }

@@ -90,7 +90,7 @@ export default function TetrisView() {
 
   return (
     <div
-      className="container"
+      className="container custom-scheme"
       style={{
         display: "grid",
         gridTemplateColumns: `repeat(${tetris.width}, 1rem)`,
